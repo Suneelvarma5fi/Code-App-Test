@@ -1,0 +1,25 @@
+{
+  "appId": "4352d8f9-be80-48ca-9d27-261d9988d84d",
+  "appDisplayName": "Dataverse Form App",
+  "description": null,
+  "environmentId": "0481c8d6-5203-4308-a186-824cdf4f517e",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "logoPath": "Default",
+  "localAppUrl": "http://localhost:3000/",
+  "region": "prod",
+  "connectionReferences": {},
+  "databaseReferences": {
+    "default": {
+      "instanceUrl": "https://pwv2-dev.crm4.dynamics.com/",
+      "databaseResourceId": "",
+      "tables": {
+        "contacts": {
+          "logicalName": "contact",
+          "displayName": "Contact",
+          "primaryKey": "contactid"
+        }
+      }
+    }
+  }
+}
