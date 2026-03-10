@@ -36,43 +36,84 @@ User fills form
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Clone and install
 
 ```bash
+git clone https://github.com/Suneelvarma5fi/Code-App-Test.git
+cd Code-App-Test
 npm install
 ```
 
-### 2. Authenticate and initialize
+### 2. Authenticate to Power Platform
 
 ```bash
-pac auth create
-pac code init --displayname "Dataverse Form App"
+pac auth create --environment 0481c8d6-5203-4308-a186-824cdf4f517e
 ```
 
-Follow the prompts to sign in and select your environment. This creates `power.config.json`.
+Follow the browser prompt to sign in with your Entra ID. Replace the environment ID above with your own if using a different environment.
 
-### 3. Generate the Dataverse service for the `contact` table
+### 3. Re-generate the data source (⚠️ CRITICAL STEP)
+
+The repo contains manually-written generated files (created because the original developer was behind a corporate proxy). **You must delete them and let the CLI regenerate properly** — this registers the data source with the Power Apps runtime:
 
 ```bash
+# Windows (CMD)
+rmdir /s /q src\generated
+rmdir /s /q .power
+
+# macOS / Linux
+rm -rf src/generated .power
+```
+
+Then run:
+
+```bash
+pac code init --displayname "Dataverse Form App"
 pac code add-data-source -a dataverse -t contact
 ```
 
-This auto-generates:
+This generates:
+- `.power/schemas/appschemas/dataSourcesInfo.ts` — runtime data source registration
 - `src/generated/models/ContactsModel.ts` — TypeScript entity types
 - `src/generated/services/ContactsService.ts` — CRUD methods (`create`, `getAll`, `update`, `delete`)
 
-The hook at `src/hooks/useDataverseForm.ts` already imports and uses these services — no manual uncommenting needed.
+### 4. Verify import paths
 
-### 4. Build and deploy to Power Apps
+After generation, confirm that `src/hooks/useDataverseForm.ts` imports still match the generated file paths:
+
+```typescript
+import { ContactsService } from "../generated/services/ContactsService";
+import type { Contacts } from "../generated/models/ContactsModel";
+```
+
+If the CLI generated them at different paths, update the imports accordingly.
+
+### 5. Build and deploy to Power Apps
 
 ```bash
 npm run build
 pac code push
 ```
 
-This publishes the app to your environment. Open the URL returned by `pac code push`, or find it in [make.powerapps.com](https://make.powerapps.com).
+This publishes the app to your environment. The CLI prints a URL like:
 
-> **Note:** If you're behind a VPN/corporate proxy and can't run `pac` commands locally, run steps 2–4 from a CI/CD pipeline or a machine that has network access to Power Platform.
+```
+App has successfully been pushed!
+You can test the app at: https://apps.powerapps.com/play/e/<env-id>/app/<app-id>
+```
+
+Open that URL in your browser, or find the app in [make.powerapps.com](https://make.powerapps.com).
+
+### 6. Test the app
+
+- Fill in First Name and Last Name (required), plus optional Email, Phone, Job Title
+- Click **Submit** — the record should appear in the list below
+- Click **Delete** on any record to remove it
+- Click **Refresh** to reload from Dataverse
+
+> **⚠️ VPN / Corporate Proxy Note**
+>
+> If `pac code add-data-source` fails with DNS errors like `ENOTFOUND *.environment.api.powerplatform.com`, your machine can't reach Power Platform APIs directly. Run steps 2–5 from a machine **without** a restrictive proxy, or configure `HTTP_PROXY` / `HTTPS_PROXY` environment variables.
 
 ---
 
