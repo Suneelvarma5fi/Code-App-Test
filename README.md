@@ -47,10 +47,10 @@ npm install
 ### 2. Authenticate to Power Platform
 
 ```bash
-pac auth create --environment 0481c8d6-5203-4308-a186-824cdf4f517e
+pac auth create --environment <your-environment-id>
 ```
 
-Follow the browser prompt to sign in with your Entra ID. Replace the environment ID above with your own if using a different environment.
+Follow the browser prompt to sign in with your Entra ID. Replace `<your-environment-id>` with the GUID of your target Power Platform environment (found in the Power Platform Admin Center).
 
 ### 3. Re-generate the data source (⚠️ CRITICAL STEP)
 
